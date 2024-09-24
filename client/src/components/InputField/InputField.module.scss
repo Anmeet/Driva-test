@@ -1,0 +1,40 @@
+//TODO: Create a variables file for color instead of hardcoding it
+
+.input-field {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  input {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+
+    &:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    &::placeholder {
+      color: #aaa;
+      opacity: 1;
+    }
+    &.error {
+      border-color: #ff4d4d;
+    }
+  }
+
+  .error-message {
+    color: #ff4d4d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+}
