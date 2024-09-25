@@ -1,6 +1,6 @@
 export type Lender = {
   name: string
-  monthlyRepayment: number
+  monthlyRepayment: string
   interestRate: string
   fees: string
 }
@@ -10,4 +10,6 @@ export type ResultsProps = {
   loanPurpose: string
   loanTerm: number
   lenders: Lender[]
+  isLoading?: boolean
+  error?: string
 }

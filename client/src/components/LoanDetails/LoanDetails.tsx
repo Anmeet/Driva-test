@@ -7,6 +7,8 @@ import { LoanDetails as LoanDetailsType } from '../../types'
 import { InputField } from '../InputField'
 import { Button } from '../Button'
 import styles from './LoanDetails.module.scss'
+import useHttp from '../../hooks/useHttp'
+import { baseApi } from '../../constants/constants'
 
 const LoanDetailsSchema = z
   .object({
@@ -16,7 +18,6 @@ const LoanDetailsSchema = z
       .min(2000, { message: 'Minimum vehicle price is $2000' }),
     deposit: z.coerce
       .number()
-
       .positive({ message: 'Deposit must be a positive number' })
       .min(0, { message: 'Deposit must be at least $0' }),
 
@@ -39,6 +40,7 @@ type LoanDetailsProps = {
 }
 export const LoanDetails: React.FC<LoanDetailsProps> = ({ next, prev }) => {
   const { setFormData, formData } = useFormContext()
+  const { sendRequest } = useHttp()
 
   const methods = useForm<LoanDetailsType>({
     mode: 'onChange',
@@ -50,8 +52,12 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ next, prev }) => {
     handleSubmit,
     setError,
     getValues,
+    watch,
+    trigger,
     formState: { errors, isValid },
   } = methods
+
+  const vehiclePrice = watch('vehiclePrice')
 
   const onSubmit = (data: LoanDetailsType) => {
     if (data.deposit > data.vehiclePrice) {
@@ -61,8 +67,19 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ next, prev }) => {
       })
       return
     }
-    updateFormData(data)
 
+    sendRequest({
+      url: baseApi + 'lenders',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: {
+        loanAmount: data.vehiclePrice - data.deposit,
+        loanTerm: data.loanTerm,
+      },
+    })
+    updateFormData(data)
     next()
   }
 
@@ -78,6 +95,12 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ next, prev }) => {
     prev()
   }
 
+  React.useEffect(() => {
+    if (vehiclePrice) {
+      trigger('deposit')
+    }
+  }, [vehiclePrice, trigger])
+
   return (
     <FormProvider {...methods}>
       <form className={styles.container} onSubmit={handleSubmit(onSubmit)}>
@@ -90,7 +113,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ next, prev }) => {
           <Button type='button' variant='primary' onClick={onPrevClick}>
             Prev
           </Button>
-          <Button disabled={!isValid} type='submit' variant='primary'>
+          <Button type='submit' variant='primary'>
             Next
           </Button>
         </div>

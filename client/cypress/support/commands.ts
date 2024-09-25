@@ -35,3 +35,48 @@
 //     }
 //   }
 // }
+
+interface MockLoanAPIOptions {
+  statusCode?: number
+}
+export const mockLendersResponse = [
+  {
+    name: 'Lender A',
+    monthlyRepayment: '$300.22',
+    interestRate: '5.5%',
+    fees: '$10 processing fee',
+  },
+  {
+    name: 'Lender B',
+    monthlyRepayment: '$290.12',
+    interestRate: '5.0%',
+    fees: '$15 application fee',
+  },
+  {
+    name: 'Lender C',
+    monthlyRepayment: '$310.42',
+    interestRate: '6.0%',
+    fees: 'No fees',
+  },
+]
+
+Cypress.Commands.add(
+  'mockLoanAPI',
+  (options: MockLoanAPIOptions = { statusCode: 200 }) => {
+    cy.intercept('POST', 'http://localhost:5000/api/lenders', {
+      statusCode: 201,
+      body: { success: true },
+    }).as('submitLoanDetails')
+
+    cy.intercept('GET', 'http://localhost:5000/api/lenders', (req) => {
+      req.reply({
+        delay: 100,
+        statusCode: options.statusCode || 200,
+        body:
+          options.statusCode === 200
+            ? mockLendersResponse
+            : { error: 'An error occurred' },
+      })
+    }).as('fetchLenderOffers')
+  }
+)

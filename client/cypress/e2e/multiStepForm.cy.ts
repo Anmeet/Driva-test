@@ -1,12 +1,21 @@
+import { mockLendersResponse } from '../support/commands'
 import { fillLoanDetails, fillPersonalDetails } from '../support/formUtils'
 
 describe('Multi Step Form Validation', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/')
+    cy.visit('/')
   })
 
-  it('should initially have the Next button disabled', () => {
-    cy.contains('Next').should('be.disabled')
+  it('should display validation errors when fields are empty', () => {
+    cy.contains('Next').click()
+
+    cy.contains('First name is required').should('be.visible')
+    cy.contains('Last name is required').should('be.visible')
+    cy.contains('Invalid date format').should('be.visible')
+    cy.contains('Please enter valid email address').should('be.visible')
+    cy.contains('Please enter 10 digit Valid Phone number').should('be.visible')
+    cy.contains('Address is required').should('be.visible')
+    cy.contains('Employment status is required').should('be.visible')
   })
 
   it('should enable the Next button once required fields are filled', () => {
@@ -99,23 +108,56 @@ describe('Multi Step Form Validation', () => {
     cy.contains('Loan Amount: $7000').should('be.visible')
     cy.contains('Loan Purpose: vehicle').should('be.visible')
     cy.contains('Loan Term: 5 years').should('be.visible')
+  })
 
-    cy.contains('Lender A').should('be.visible')
-    cy.contains('Monthly Repayment: $300').should('be.visible')
-    cy.contains('Interest Rate: 5.5% APR').should('be.visible')
-    cy.contains('Lender B').should('be.visible')
-    cy.contains('Monthly Repayment: $290').should('be.visible')
+  it('should submit the loan details in LoanDetails Page and fetch lender offers in Results Page', () => {
+    cy.mockLoanAPI()
+
+    fillPersonalDetails()
+    cy.contains('Next').click()
+
+    fillLoanDetails()
+
+    cy.get('button[type="submit"]').click()
+
+    cy.wait('@submitLoanDetails').its('response.statusCode').should('eq', 201)
+    cy.url().should('include', '/results')
+
+    cy.wait('@fetchLenderOffers').its('response.statusCode').should('eq', 200)
+
+    mockLendersResponse.forEach((lender) => {
+      cy.contains(lender.name).should('exist')
+      cy.contains(`Monthly Repayment: ${lender.monthlyRepayment}`).should(
+        'exist'
+      )
+      cy.contains(`Interest Rate: ${lender.interestRate}`).should('exist')
+      cy.contains(`Fees: ${lender.fees}`).should('exist')
+    })
+  })
+
+  it('should display the error message in Results Page when an error occurs', () => {
+    cy.mockLoanAPI({ statusCode: 500 })
+
+    fillPersonalDetails()
+    cy.contains('Next').click()
+
+    fillLoanDetails()
+
+    cy.get('button[type="submit"]').click()
+
+    cy.wait('@fetchLenderOffers').its('response.statusCode').should('eq', 500)
+    cy.contains('Could Not Load Lender Offers :Request failed!')
   })
 
   it('should redirect to the main page when accessing /loan or /results directly', () => {
-    cy.visit('http://localhost:3000/loan')
+    cy.visit('/loan')
     cy.url().should('include', '/')
-    cy.visit('http://localhost:3000/results')
+    cy.visit('/results')
     cy.url().should('include', '/')
   })
 
   it('should redirect to the main page for an unknown route', () => {
-    cy.visit('http://localhost:3000/unknown-route')
+    cy.visit('/unknown-route')
 
     cy.url().should('include', '/')
   })

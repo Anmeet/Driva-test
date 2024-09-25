@@ -143,7 +143,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ next }) => {
             placeholder='Enter Annual Income'
           />
 
-          <Button disabled={!isValid} type='submit' variant='primary'>
+          <Button type='submit' variant='primary'>
             Next
           </Button>
         </div>

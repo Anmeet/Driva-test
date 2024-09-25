@@ -36,7 +36,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
         ))}
       </select>
       {errors[name] && (
-        <p className='error-message'>
+        <p className={styles['error-message']}>
           {(errors[name]?.message as string) || 'Error'}
         </p>
       )}

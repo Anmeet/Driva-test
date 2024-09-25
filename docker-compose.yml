@@ -1,0 +1,26 @@
+version: '1.0'
+
+services:
+  ## set up node container
+  server:
+    build: ./server
+    expose:
+      - '5000'
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./server:/server
+    command: npm run dev
+
+  ## set up react container
+  client:
+    build: ./client
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./client:/client
+    links:
+      - server
+    command: npm run start
