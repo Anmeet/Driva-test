@@ -70,11 +70,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ next }) => {
     resolver: zodResolver(PersonalDetailsSchema),
   })
 
-  const {
-    handleSubmit,
-    watch,
-    formState: { errors, isValid },
-  } = methods
+  const { handleSubmit, watch } = methods
 
   const onSubmit = (data: PersonalDetailType) => {
     setFormData((prev) => ({

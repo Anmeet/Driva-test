@@ -7,7 +7,7 @@
 ## About The Project
 
 This Project is a Personal and Loan-related Details Recorder and Calculator through a multi-step form. It includes the feature such as User can provide
-their Persoanl and Loan Details through a multi-step form. After the form is submitted, server will process Loan information and provide the  Loan offers from multiple lenders based on the submitted details.
+their Personal and Loan Details through a multi-step form. After the form is submitted, server will process Loan information and provide the  Loan offers from multiple lenders based on the submitted details.
 
 ## How to Run the Project
 
@@ -68,7 +68,7 @@ cd <project-directory>
 
   API Documentation is provided using swagger. You can view and test all the endpoints by visiting the following URL in the browser window:
 
-  [http://localhost:5000/api-docs/]([http://localhost:5000/api-docs/)
+  [http://localhost:5000/api-docs/]
 
 ## Note
 

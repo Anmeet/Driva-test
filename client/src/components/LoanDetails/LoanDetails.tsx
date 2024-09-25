@@ -48,14 +48,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ next, prev }) => {
     resolver: zodResolver(LoanDetailsSchema),
   })
 
-  const {
-    handleSubmit,
-    setError,
-    getValues,
-    watch,
-    trigger,
-    formState: { errors, isValid },
-  } = methods
+  const { handleSubmit, setError, getValues, watch, trigger } = methods
 
   const vehiclePrice = watch('vehiclePrice')
 
